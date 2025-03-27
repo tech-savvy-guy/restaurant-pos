@@ -92,7 +92,7 @@ export default function AccountingPage() {
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      <SidebarNav collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      <SidebarNav collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} hideToggle={true} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white p-4 flex items-center gap-4 border-b">
@@ -108,9 +108,11 @@ export default function AccountingPage() {
           )}
           <div className="flex-1">
             <h1 className="text-xl font-bold">Analytics</h1>
-            <p className="text-sm text-gray-500">Financial accounting and reporting</p>
+            {!isMobile && (
+              <p className="text-sm text-gray-500">Financial accounting and reporting</p>
+            )}
           </div>
-          <Button variant="outline" className="gap-2">
+          <Button className="gap-2">
             <Download className="h-4 w-4" />
             Export
           </Button>
@@ -325,17 +327,18 @@ export default function AccountingPage() {
                 <CardDescription>Sales and customer trends by day of week</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-[280px] mb-2">
-                  <ChartContainer config={weeklyChartConfig}>
+                <div className="h-[220px] sm:h-[280px] mb-2">
+                  <ChartContainer config={weeklyChartConfig} className="w-full h-full">
                     <BarChart
                       accessibilityLayer
                       data={weeklyPerformanceData}
                       margin={{
                         top: 20,
-                        right: 10,
-                        left: 10,
-                        bottom: 10,
+                        right: 20,
+                        left: 20,
+                        bottom: 20,
                       }}
+                      layout="horizontal"
                     >
                       <CartesianGrid vertical={false} strokeDasharray="3 3" />
                       <XAxis dataKey="day" tickLine={false} tickMargin={10} axisLine={false} />
@@ -344,11 +347,10 @@ export default function AccountingPage() {
                         dataKey="sales"
                         fill={sapphirePrimary}
                         radius={[4, 4, 0, 0]}
-                        barSize={35}
+                        barSize={30}
                         isAnimationActive={false}
                         cursor="default"
-                      >
-                      </Bar>
+                      />
                     </BarChart>
                   </ChartContainer>
                 </div>
@@ -408,35 +410,46 @@ export default function AccountingPage() {
               <CardDescription>Latest financial activities</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <div className="grid grid-cols-5 bg-muted/50 p-3 text-sm font-medium">
-                  <div>Transaction ID</div>
-                  <div>Date</div>
-                  <div>Amount</div>
-                  <div>Type</div>
-                  <div>Status</div>
-                </div>
-                <div className="divide-y">
-                  {transactions.map((transaction, i) => (
-                    <div key={i} className="grid grid-cols-5 p-3 text-sm">
-                      <div className="font-medium">{transaction.id}</div>
-                      <div>{format(transaction.date, "MMM dd, yyyy")}</div>
-                      <div>${transaction.amount.toFixed(2)}</div>
-                      <div>{transaction.type}</div>
-                      <div>
-                        <Badge
-                          variant={transaction.status === "Completed" ? "success" : "destructive"}
-                          className="rounded-full px-2 py-0.5 text-xs"
-                        >
-                          {transaction.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="overflow-auto -mx-6 px-6">
+                <table className="w-full min-w-full border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-3 px-2 text-left font-medium text-sm text-muted-foreground">Transaction ID</th>
+                      <th className="py-3 px-2 text-left font-medium text-sm text-muted-foreground hidden md:table-cell">
+                        Date
+                      </th>
+                      <th className="py-3 px-2 text-left font-medium text-sm text-muted-foreground">Amount</th>
+                      <th className="py-3 px-2 text-left font-medium text-sm text-muted-foreground hidden sm:table-cell">
+                        Type
+                      </th>
+                      <th className="py-3 px-2 text-left font-medium text-sm text-muted-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions.map((transaction, i) => (
+                      <tr key={i} className="border-b hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-2 text-sm font-medium">{transaction.id}</td>
+                        <td className="py-3 px-2 text-sm hidden md:table-cell">
+                          {format(transaction.date, "MMM dd, yyyy")}
+                        </td>
+                        <td className="py-3 px-2 text-sm">${transaction.amount.toFixed(2)}</td>
+                        <td className="py-3 px-2 text-sm hidden sm:table-cell">{transaction.type}</td>
+                        <td className="py-3 px-2 text-sm">
+                          <Badge
+                            variant={transaction.status === "Completed" ? "success" : "destructive"}
+                            className="rounded-full px-2 py-0.5 text-xs"
+                          >
+                            {transaction.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
+
         </ScrollArea>
       </div>
     </div>

@@ -10,13 +10,12 @@ import {
   Clock,
   Edit,
   Mail,
-  Info,
-  MenuIcon,
   Phone,
   Search,
   Trash2,
   Users,
   Plus,
+  MenuIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -35,6 +34,7 @@ export default function ReservationsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [selectedTab, setSelectedTab] = useState("all")
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [reservations, setReservations] = useState([
     {
       id: "1",
@@ -156,7 +156,7 @@ export default function ReservationsPage() {
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      <SidebarNav collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      <SidebarNav collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} hideToggle={true} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-white p-4 flex items-center gap-4 border-b">
@@ -172,13 +172,15 @@ export default function ReservationsPage() {
           )}
           <div className="flex-1">
             <h1 className="text-xl font-bold">Reservations</h1>
-            <p className="text-sm text-gray-500">Manage your restaurant bookings and table assignments</p>
+            {!isMobile &&  (
+              <p className="text-sm text-gray-500">Manage your restaurant bookings and table assignments</p>
+            )}
           </div>
-          <Button>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            New Reservation
+            New {!isMobile && "Reservation" }
           </Button>
-        </div>
+        </div> 
 
         {/* Main Content */}
         <div className="flex-1 overflow-hidden p-4 sm:p-6">
@@ -273,12 +275,13 @@ export default function ReservationsPage() {
                               </div>
                             </div>
                             <Badge
-                              className={`${reservation.status === "upcoming"
-                                  ? "bg-green-700/90 hover:bg-green-700"
+                              className={`${
+                                reservation.status === "upcoming"
+                                  ? "bg-green-500/90 hover:bg-green-500"
                                   : reservation.status === "completed"
-                                    ? "bg-blue-700/90 hover:bg-blue-700"
-                                    : "bg-red-700/90 hover:bg-red-700"
-                                } shadow-sm`}
+                                    ? "bg-blue-500/90 hover:bg-blue-500"
+                                    : "bg-red-500/90 hover:bg-red-500"
+                              } shadow-sm`}
                             >
                               {reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1)}
                             </Badge>
@@ -297,29 +300,18 @@ export default function ReservationsPage() {
                               )}
                               <div className="font-medium text-primary">{reservation.table || "Table 5"}</div>
                             </div>
-
-                            {/* Actions */}
-                            {reservation.status === "upcoming" && (
-                              <div className="flex gap-2">
-                                <Button variant="outline" size="icon" className="h-8 w-8">
-                                  <Edit className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                            )}
-
-                            {reservation.status === "completed" && (
-                              <Button variant="ghost" className="">
-                                <Info className="h-3.5 w-3.5" /> View Details
+                            <div className="flex gap-2">
+                              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
+                                <Edit className="h-3.5 w-3.5" />
                               </Button>
-                            )}
-
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-full text-red-500 hover:text-red-600 hover:bg-red-50 border-red-100"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           </div>
                           {reservation.notes && (
                             <div className="mt-3 text-sm text-gray-600 bg-amber-50/50 p-3 rounded-lg border border-amber-100/50">
@@ -339,6 +331,98 @@ export default function ReservationsPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Reservation Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Reservation</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="date" className="text-sm font-medium">
+                  Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !selectedDate && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => date && setSelectedDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="time" className="text-sm font-medium">
+                  Time
+                </label>
+                <Input id="time" type="time" defaultValue="19:00" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="guests" className="text-sm font-medium">
+                  Number of Guests
+                </label>
+                <Input id="guests" type="number" min="1" max="20" defaultValue="2" />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="table" className="text-sm font-medium">
+                  Table
+                </label>
+                <Input id="table" placeholder="Table number" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-sm font-medium">
+                Customer Name
+              </label>
+              <Input id="name" placeholder="Full name" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="phone" className="text-sm font-medium">
+                  Phone Number
+                </label>
+                <Input id="phone" placeholder="Phone number" />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </label>
+                <Input id="email" type="email" placeholder="Email address" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="notes" className="text-sm font-medium">
+                Notes
+              </label>
+              <Input id="notes" placeholder="Special requests or additional information" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setIsAddDialogOpen(false)}>Add Reservation</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

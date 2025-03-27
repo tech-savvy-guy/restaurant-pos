@@ -10,7 +10,6 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  ChartNoAxesCombined,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -22,16 +21,21 @@ const navItems = [
   { icon: Utensils, label: "Table Services", href: "/table-services" },
   { icon: CalendarRange, label: "Reservation", color: "text-primary", href: "/reservations" },
   { icon: Truck, label: "Delivery", href: "/delivery" },
-  { icon: ChartNoAxesCombined, label: "Analytics", href: "/analytics" },
+  { icon: MenuIcon, label: "Analytics", href: "/analytics" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ]
 
 interface SidebarNavProps {
   collapsed?: boolean
   setCollapsed?: (collapsed: boolean) => void
+  hideToggle?: boolean
 }
 
-export function SidebarNav({ collapsed: propCollapsed, setCollapsed: propSetCollapsed }: SidebarNavProps) {
+export function SidebarNav({
+  collapsed: propCollapsed,
+  setCollapsed: propSetCollapsed,
+  hideToggle = true,
+}: SidebarNavProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
@@ -66,7 +70,7 @@ export function SidebarNav({ collapsed: propCollapsed, setCollapsed: propSetColl
       } border-r h-screen bg-white transition-all duration-300 fixed md:relative ${isMobile ? "z-50 shadow-xl" : ""}`}
     >
       {/* Mobile hamburger button - fixed position */}
-      {isMobile && collapsed && (
+      {isMobile && collapsed && !hideToggle && (
         <Button
           variant="outline"
           size="icon"
@@ -81,7 +85,11 @@ export function SidebarNav({ collapsed: propCollapsed, setCollapsed: propSetColl
         {/* Header with logo and close button */}
         <div className={`flex items-center gap-2 mb-8 ${collapsed ? "justify-center" : "justify-between"}`}>
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="logo" className="w-8 h-8" />
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-01-12%20at%2012.32.42%20PM-QicgA83ZI0TfZlOynDOqlhOGnbwzEv.jpeg"
+              alt="Chili POS Logo"
+              className="w-8 h-8"
+            />
             {!collapsed && <span className="font-semibold">Food Park</span>}
           </div>
 
