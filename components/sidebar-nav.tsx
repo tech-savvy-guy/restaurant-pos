@@ -86,11 +86,7 @@ export function SidebarNav({
         {/* Header with logo and close button */}
         <div className={`flex items-center gap-2 mb-8 ${collapsed ? "justify-center" : "justify-between"}`}>
           <div className="flex items-center gap-2">
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-01-12%20at%2012.32.42%20PM-QicgA83ZI0TfZlOynDOqlhOGnbwzEv.jpeg"
-              alt="Chili POS Logo"
-              className="w-8 h-8"
-            />
+            <img src="/logo.png" alt="logo" className="w-8 h-8"/>
             {!collapsed && <span className="font-semibold">Food Park</span>}
           </div>
 
