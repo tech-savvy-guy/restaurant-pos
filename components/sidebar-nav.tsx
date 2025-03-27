@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  ChartNoAxesCombined,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -21,7 +22,7 @@ const navItems = [
   { icon: Utensils, label: "Table Services", href: "/table-services" },
   { icon: CalendarRange, label: "Reservation", color: "text-primary", href: "/reservations" },
   { icon: Truck, label: "Delivery", href: "/delivery" },
-  { icon: MenuIcon, label: "Analytics", href: "/analytics" },
+  { icon: ChartNoAxesCombined, label: "Analytics", href: "/analytics" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ]
 
